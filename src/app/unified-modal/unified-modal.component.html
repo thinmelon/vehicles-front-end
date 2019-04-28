@@ -1,0 +1,20 @@
+<div class="modal-header">
+    <h4 class="modal-title">{{ title }}</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body patient-select-modal-body">
+    <div [hidden]="hint === ''" class="alert alert-danger"> {{hint}}</div>
+    <div *ngFor="let item of keyValues">
+        <div>{{ item.key }}</div>
+        <input *ngIf="item.type === 'text'" type="text" class="form-control" title="text-input" placeholder=""
+               [(ngModel)]="item.src"/>
+    </div>
+    <p *ngIf="extra">
+        {{ extra }}
+    </p>
+</div>
+<div class="modal-footer" *ngIf="submitBtnText !== ''">
+    <button type="submit" class="btn btn-outline-danger" (click)="onSubmit()">{{ submitBtnText }}</button>
+</div>
