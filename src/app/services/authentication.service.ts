@@ -39,27 +39,16 @@ export class LoginGuard implements CanActivate, CanActivateChild, CanLoad {
             return true;
         }
 
+        const that = this;
+        const modalRef = this.modalService.open(UnifiedModalComponent);
         // Store the attempted URL for redirecting
         this.backbone.redirectUrl = url;
         console.log('checkLogin  redirectUrl  ===>  ' + this.backbone.redirectUrl);
 
-        // // Create a dummy session id
-        // const sessionId = 123456789;
-        //
-        // // Set our navigation extras object
-        // // that contains our global query params and fragment
-        // const navigationExtras: NavigationExtras = {
-        //     queryParams: {'session_id': sessionId},
-        //     fragment: 'anchor'
-        // };
-
-        // Navigate to the login page with extras
-        // this.router.navigate(['/login'], navigationExtras);
-
-        const modalRef = this.modalService.open(UnifiedModalComponent);
-
-        modalRef.componentInstance.title = '登录';
+        modalRef.componentInstance.title = '登录框';
         modalRef.componentInstance.hint = '';
+        modalRef.componentInstance.submitBtnText = '登录';
+        modalRef.componentInstance.cancelBtnText = '注册';
         modalRef.componentInstance.keyValues = [
             {
                 index: 0,
@@ -70,17 +59,61 @@ export class LoginGuard implements CanActivate, CanActivateChild, CanLoad {
             {
                 index: 1,
                 key: '密码',
-                type: 'text',
+                type: 'password',
                 src: ''
             }
         ];
         modalRef.componentInstance.submitEvt.subscribe(evt => {
-            console.log(evt);
-            this.backbone.isLoggedIn = 'YES';
-            this.router.navigate(['/index']);
+            const startTime = Date.now();
+            console.log('请求时间：', startTime);
+            this.backbone.testLogin(
+                evt[0].src,
+                evt[1].src
+            )
+                .subscribe(result => {
+                    console.log(result);
+                    if (result.hasOwnProperty('code') && result.code === 0) {
+                        modalRef.componentInstance.activeModal.close();
+                        console.log('系统时间：', result.serverTime);
+                        const endTime = Date.now();
+                        console.log('当前时间：', endTime);
+                        console.log('时间校准：', Math.round(result.serverTime - ((startTime + endTime) / 2)));
+                        that.loginSuccess(result);
+                    } else if (result.hasOwnProperty('code')) {
+                        modalRef.componentInstance.hint = '账号或密码输入有误';
+                    } else {
+                        modalRef.componentInstance.hint = result;
+                    }
+                });
+        });
+        modalRef.componentInstance.cancelEvt.subscribe(evt => {
+            this.router.navigate(['/register']);
         });
 
-
         return false;
+    }
+
+    /**
+     * 登录成功
+     * @param params 传参
+     */
+    loginSuccess(params) {
+        /**
+         *  保存session
+         */
+        this.backbone.session = params.session;
+        /**
+         *  保存publicKey
+         */
+        this.backbone.publicKey = params.publicKey;
+        /**
+         *  设置状态为已登录
+         */
+        this.backbone.isLoggedIn = 'YES';
+        /**
+         *  跳转至回调地址
+         */
+        console.log('REDIRECT URL ===> ' + this.backbone.redirectUrl);
+        this.backbone.redirectUrl ? this.router.navigate([this.backbone.redirectUrl]) : this.router.navigate(['/index']);
     }
 }

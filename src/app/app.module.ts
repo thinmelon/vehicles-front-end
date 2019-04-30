@@ -1,6 +1,7 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
+import {HttpClientModule} from '@angular/common/http';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
 import {AppRoutingModule} from './app-routing.module';
@@ -9,13 +10,14 @@ import {UnifiedModalComponent} from './unified-modal/unified-modal.component';
 import {IndexComponent} from './index/index.component';
 import {LoginGuard} from './services/authentication.service';
 import {BackboneService} from './services/backbone.service';
-
+import { RegisterComponent } from './register/register.component';
 
 @NgModule({
     declarations: [
         AppComponent,
         UnifiedModalComponent,
-        IndexComponent
+        IndexComponent,
+        RegisterComponent
     ],
     entryComponents: [
         UnifiedModalComponent
@@ -23,6 +25,7 @@ import {BackboneService} from './services/backbone.service';
     imports: [
         BrowserModule,
         FormsModule,
+        HttpClientModule,
         AppRoutingModule,
         NgbModule
     ],

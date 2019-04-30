@@ -10,11 +10,18 @@
         <div>{{ item.key }}</div>
         <input *ngIf="item.type === 'text'" type="text" class="form-control" title="text-input" placeholder=""
                [(ngModel)]="item.src"/>
+        <input *ngIf="item.type === 'password'" type="password" class="form-control" title="text-input" placeholder=""
+               [(ngModel)]="item.src"/>
     </div>
     <p *ngIf="extra">
         {{ extra }}
     </p>
 </div>
-<div class="modal-footer" *ngIf="submitBtnText !== ''">
-    <button type="submit" class="btn btn-outline-danger" (click)="onSubmit()">{{ submitBtnText }}</button>
+<div class="modal-footer">
+    <button *ngIf="submitBtnText !== ''" type="submit" class="btn btn-outline-danger" (click)="onSubmit()">
+        {{ submitBtnText }}
+    </button>
+    <button *ngIf="cancelBtnText !== ''" class="btn btn-outline-info" (click)="onCancel()">
+        {{ cancelBtnText }}
+    </button>
 </div>
